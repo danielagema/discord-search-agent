@@ -1,4 +1,4 @@
-// 💻 Webserver für Replit-URL
+// 💻 Webserver für Render-URL
 const express = require("express");
 const app = express();
 
@@ -37,9 +37,7 @@ client.on("messageCreate", async (message) => {
   const frage = message.content.trim();
 
   try {
-    const placeholder = await message.reply(
-      "⏳ Deine Anfrage wird verarbeitet...",
-    );
+    const placeholder = await message.reply("⏳ Deine Anfrage wird verarbeitet...");
 
     const response = await axios.post(N8N_WEBHOOK_URL, {
       frage: frage,
@@ -47,18 +45,20 @@ client.on("messageCreate", async (message) => {
       channel_id: message.channel.id,
     });
 
-    const antwort =
+    const rawAntwort =
       response.data.output ||
       response.data.antwort ||
       "✅ Anfrage wurde verarbeitet.";
 
-    await message.reply(antwort);
+    const chunks = rawAntwort.match(/[\s\S]{1,1900}/g);
+    for (const chunk of chunks) {
+      await message.reply(chunk);
+    }
+
     await placeholder.delete().catch(() => {});
   } catch (error) {
     console.error("❌ Fehler bei der Anfrage:", error.message);
-    await message.reply(
-      "❌ Es gab ein Problem beim Verarbeiten deiner Anfrage.",
-    );
+    await message.reply("❌ Es gab ein Problem beim Verarbeiten deiner Anfrage.");
   }
 });
 
