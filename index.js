@@ -32,7 +32,7 @@ client.once("ready", () => {
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
-  if (message.channel.id !== allowedChannelId) return;
+  if (message.channel.id !== ALLOWED_CHANNEL_ID) return;
 
   const frage = message.content.trim();
 
